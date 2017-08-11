@@ -3,66 +3,69 @@
 
 var game = {
 	win : 0,
-	lose : 0,
-	guess_left : 9,
+	guess_left : 15,
 	guess_done : [],
 	guessed : false,
 	letters : ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
+	words : ["program", "javascript", "jquery", "computer", "laptop", "smu"],
 	answer : "",
+	blanks : "",
+	answer_index : [],
 
 	update_board : function() {
 		document.querySelector("#win").innerHTML = "Wins: " + game.win;
-		document.querySelector("#lose").innerHTML = "Losses: " + game.lose;
-		document.querySelector("#guess_left").innerHTML = "Guesses Left: " + game.guess_left;
-		document.querySelector("#guess_done").innerHTML = "Your Guesses so far: " + game.guess_done;
+		document.querySelector("#guess_left").innerHTML = "Number of Guesses Remaining: " + game.guess_left;
+		document.querySelector("#guess_done").innerHTML = "Letters Already Guessed: " + game.guess_done;
 	},
 
 	reset_board : function() {
-		game.guess_left = 9;
+		game.guess_left = 15;
 		game.guess_done = [];
 		if (game.guessed) {
 			game.win++;
 		}
-		else {
-			game.lose++;
-		}
 		game.guessed = false;
-		game.answer = game.choose_letter();
+		game.answer = game.choose_words();
 		//console.log(game.answer);
 	},
 
-	choose_letter : function() {
-		return game.letters[Math.floor(Math.random() * game.letters.length)];
-	}
+	choose_words : function() {
+		// choose random word from array
+		var word = game.words[Math.floor(Math.random() * game.words.length)];
+		// create right number of blanks
+		for (var i = 0; i < word.length; i++) {
+			game.blanks += "_";
+		}
+		return word;
+	},
+
+	// loop through word to check if pressed alphabet is part of the answer word.
+	check_through_word : function(alpha)) {
+		for (var i = 0; i < game.answer.length; i++) {
+			if (game.answer[i] === alpha) {
+				// Update the blanks when correct alphabet is found
+				game.blanks[i] = alpha;
+			}
+		}
+	},
 };
 
 
 // MAIN PROCESS
 // ==============================================================================
 
-game.answer = game.choose_letter();
+// choose the answer
+game.answer = game.choose_words();
 //console.log(game.answer);
 
 document.onkeyup = function(event) {
 
 	var userInput = String.fromCharCode(event.keyCode).toLowerCase();
 
-	//when user gets it right
-	if (userInput === game.answer) {
-		game.guessed = true;
-		game.reset_board();
-		game.update_board();
-	}
-	//when user misses the answer
-	else {
-		game.guess_left--;
-		game.guess_done.push(userInput);
-		//when all 9 guesses are used
-		if (game.guess_left == 0) {
-			game.reset_board();
-		}
-		game.update_board();
-	}
+	check_through_word(userInput);
+
+	//fill in found alphas
+
 
 };
 
